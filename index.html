@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Holo-Explorer by Augma Imaginarium</title>
+    <meta name="description" content="Control Iron Man-style holograms with your bare hands through your webcam: an arc reactor, a periodic table you can mix, and the Infinity Stones. Runs in the browser; your video never leaves your device." />
+    <meta name="theme-color" content="#030405" />
+    <meta property="og:title" content="Holo-Explorer by Augma Imaginarium" />
+    <meta property="og:description" content="Hand-tracked AR holograms in your browser: arc reactor, periodic table, Infinity Stones." />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://storage.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500&amp;family=Share+Tech+Mono&amp;display=swap" />
+    <script type="module" crossorigin src="./assets/index-n1DwC1cY.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/three-CW6szbEB.js">
+    <link rel="modulepreload" crossorigin href="./assets/mediapipe-Cij2yF_1.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-BHyrBzyt.css">
+  </head>
+  <body>
+    <video id="video" playsinline muted></video>
+    <canvas id="scene"></canvas>
+    <canvas id="overlay"></canvas>
+    <div id="status" role="status"></div>
+    <div id="corner">
+      <button id="help-button" type="button" aria-haspopup="dialog">? HOW TO PLAY</button>
+      <button id="quality-button" type="button" aria-haspopup="true" hidden>QUALITY</button>
+      <div id="quality-menu" hidden></div>
+    </div>
+    <button id="settings-toggle" type="button" aria-expanded="false" aria-controls="toggles">SETTINGS</button>
+    <div id="toggles">
+      <button id="mirror-toggle" type="button" hidden>MIRROR ON</button>
+      <button id="depth-toggle" type="button" hidden>DEPTH INVERT ON</button>
+      <button id="grayscale-toggle" type="button" hidden>B&amp;W ON</button>
+      <button id="camera-toggle" type="button" hidden>CAMERA</button>
+      <div id="camera-menu" hidden></div>
+      <label id="dim-control" hidden>DIM <input type="range" min="0" max="80" step="5" value="0" aria-label="Darken camera view" /> <output>0%</output></label>
+    </div>
+    <div id="toast" role="status" hidden></div>
+    <footer id="footer">
+      <div id="hint">pinch &amp; hold or double-tap: menu · fist: move · point &amp; flick: spin · <span class="key">?</span> how to play</div>
+      <a id="brand" href="https://augmaimaginarium.com" target="_blank" rel="noopener"><span class="name">Holo-Explorer</span> <span class="by">by Augma Imaginarium</span></a>
+    </footer>
+
+    <dialog id="manual" aria-labelledby="manual-title">
+      <form method="dialog" class="manual-close"><button type="submit" aria-label="Close">✕</button></form>
+      <h1 id="manual-title">How to play<em aria-hidden="true">// guide</em></h1>
+      <p class="sub" aria-hidden="true"><span>Holo-Explorer</span><span>Augma Imaginarium</span></p>
+      <p class="lede">Holo-Explorer turns your webcam into a hologram lab. Your hands are the controller: no mouse, no app.</p>
+
+      <section>
+        <h2>1 · Get set up</h2>
+        <ol>
+          <li><b>Allow the camera</b> when your browser asks. The video is processed on your device and is never uploaded.</li>
+          <li><b>Light your hands.</b> Face a window or lamp. Hand tracking struggles in the dark or with a bright window behind you.</li>
+          <li><b>Step back</b> about an arm's length (50–150 cm) so both hands fit in the picture, palms toward the camera.</li>
+          <li><b>On a phone or tablet:</b> prop it up or use a stand. You need both hands free. Landscape gives the most room.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>2 · Gestures</h2>
+        <table class="gestures">
+          <tr><th>Open the menu</th><td><b>Pinch and hold</b> in empty space until the ring fills, or <b>double-click / double-tap</b> the screen. Pinch a button to pick it.</td></tr>
+          <tr><th>Pick / press</th><td>A <b>quick pinch</b> (thumb and index tap together) on a button, tile or stone.</td></tr>
+          <tr><th>Point</th><td>Index finger out, other fingers curled. Highlights what you point at. Your fingertip glows gold.</td></tr>
+          <tr><th>Move</th><td>Make a <b>fist</b> on the object and move your hand. Turn your wrist to rotate it.</td></tr>
+          <tr><th>Spin</th><td><b>Point and flick</b> your finger in any direction. It coasts to a stop.</td></tr>
+          <tr><th>Resize</th><td><b>Pinch with both hands</b> on the object, then pull apart or push together.</td></tr>
+          <tr><th>Clap</th><td>Two open hands meeting quickly. Its job depends on the mode (below).</td></tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>3 · Modes</h2>
+        <p>Open the menu in empty space to choose one. Only one runs at a time.</p>
+        <h3>Arc Reactor</h3>
+        <ul>
+          <li><b>Explode it:</b> two fists pulled apart, <i>or</i> palms together then apart quickly, <i>or</i> twist a fist counter-clockwise like a knob.</li>
+          <li><b>Exploded:</b> pinch a part to pull it out; pinch and hold a part for its spec card. Drop it near its slot and it snaps home.</li>
+          <li><b>Assemble:</b> clap, or twist a fist clockwise.</li>
+        </ul>
+        <h3>Periodic Table</h3>
+        <ul>
+          <li><b>Point</b> to browse the elements; a <b>quick pinch</b> on a tile adds one atom to the mix (up to 12). Pinch a chip in the tray to remove one.</li>
+          <li><b>Clap</b> (or pinch MIX) to combine. Real molecules (H₂O, CO₂, CH₄, NaCl…) show their true structure; anything else becomes a new element.</li>
+          <li>The table closes to show the result. Open the menu and pick <b>PERIODIC TABLE</b> to bring it back, or clap with an empty tray.</li>
+        </ul>
+        <h3>Infinity Stones</h3>
+        <ul>
+          <li><b>Pinch a stone</b> to take it out and read its file.</li>
+          <li><b>Flip an open hand palm-up</b> to see its artifact (the Space Stone becomes the Tesseract); <b>palm-down</b> for the stone again. The menu has STONE / ARTIFACT too.</li>
+          <li><b>Clap</b> to fly all six into the gauntlet. Clap again to release them.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>4 · Settings &amp; quality</h2>
+        <ul>
+          <li><b>QUALITY</b> (top left): <b>AUTO</b> picks for your device. <b>HIGH</b> = sharpest (4K camera, full glow, arm tracking). <b>MEDIUM</b> for most laptops. <b>LOW</b> for phones and older machines. <b>SAFE</b> runs almost anywhere: no glow effect and hand tracking on the CPU. Use it if the page won't start or stutters.</li>
+          <li>If the game runs slowly, it offers a lower setting. You can also add <code>?quality=low</code> to the link.</li>
+          <li><b>MIRROR</b> flips the view like a mirror. <b>DEPTH INVERT</b> swaps the push/pull direction. <b>B&amp;W</b> gives the holographic grey look. <b>DIM</b> darkens a bright room. <b>CAMERA</b> switches cameras (e.g. an iPhone via Continuity Camera).</li>
+          <li>On small screens these sit behind <b>SETTINGS</b>.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>5 · Keyboard (desktop)</h2>
+        <p class="keys"><span class="key">M</span> menu · <span class="key">E</span> explode/assemble · <span class="key">F</span> mirror · <span class="key">I</span> depth invert · <span class="key">B</span> black &amp; white · <span class="key">C</span> next camera · <span class="key">L</span> labels · <span class="key">O</span> hand occlusion · <span class="key">D</span> debug · <span class="key">H</span> this guide</p>
+      </section>
+
+      <section>
+        <h2>6 · Troubleshooting</h2>
+        <ul>
+          <li><b>“Camera access was blocked”:</b> click the camera icon in the address bar, allow it, then Retry. The page must be opened over <b>https</b>.</li>
+          <li><b>Hands not detected:</b> more light, move back so your whole hand is visible, and avoid busy backgrounds.</li>
+          <li><b>Jittery or slow:</b> pick a lower QUALITY, close other tabs, plug in your laptop.</li>
+          <li><b>Black screen or crash:</b> choose SAFE, or open the link with <code>?quality=safe</code>.</li>
+          <li>Works best in recent <b>Chrome, Edge, Safari or Arc</b>.</li>
+        </ul>
+      </section>
+
+      <p class="privacy">Privacy: the camera feed and your hand positions stay in your browser. Only the hand-tracking model files are downloaded.</p>
+      <section class="about">
+        <h2>About</h2>
+        <p>Holo-Explorer is made by <b>Augma Imaginarium</b>, an XR studio in Bangkok.</p>
+        <ul class="links">
+          <li><span>Web</span><a href="https://augmaimaginarium.com" target="_blank" rel="noopener">augmaimaginarium.com</a></li>
+          <li><span>Instagram</span><a href="https://instagram.com/augma.im" target="_blank" rel="noopener">@augma.im</a></li>
+          <li><span>Email</span><a href="mailto:hello@augmaimaginarium.com">hello@augmaimaginarium.com</a></li>
+        </ul>
+      </section>
+      <form method="dialog" class="manual-start"><button type="submit">START</button></form>
+    </dialog>
+
+  </body>
+</html>
